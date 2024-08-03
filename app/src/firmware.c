@@ -20,16 +20,29 @@ int main(void) {
 
   uint64_t start_time = system_get_ticks();
   float duty_cycle = 0.0f;
+  bool duty_cycle_over_100 = false;
 
   timer_pwm_set_duty_cycle(duty_cycle);
 
   while (1) {
     if (system_get_ticks() - start_time >= 10) {
-      duty_cycle += 1.0f;
+      if (duty_cycle_over_100 == false)
+      {
+       duty_cycle += 1.0f;
       if (duty_cycle > 100.0f) {
-        duty_cycle = 0.0f;
+        duty_cycle_over_100 = true;
       }
       timer_pwm_set_duty_cycle(duty_cycle);
+      }
+      else if (duty_cycle_over_100 == true)
+      {
+        duty_cycle -= 1.0f;
+      if (duty_cycle < 0.0f) {
+        duty_cycle_over_100 = false;
+      }
+      timer_pwm_set_duty_cycle(duty_cycle);
+      }
+      
 
       start_time = system_get_ticks();
     }
